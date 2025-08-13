@@ -12,8 +12,8 @@
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-org/recipe-api.git
-cd recipe-api
+git clone https://github.com/serhii-nykyforov/hs-recipe-api.git
+cd hs-recipe-api
 
 # Install dependencies and activate environment
 poetry install
