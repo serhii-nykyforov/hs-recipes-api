@@ -22,6 +22,7 @@ async def main():
     workflow = build_workflow()
     pr_number = os.getenv("PR_NUMBER")
     query = "Write a review for PR: " + pr_number
+    print(f"Query: {query}")
     prompt = RichPromptTemplate(query)
     handler = workflow.run(prompt.format(), ctx=Context(workflow))
 
@@ -141,25 +142,23 @@ def init_llm() -> OpenAI:
 # -------------------- GitHub Setup --------------------
 class GitHubReviewContext:
     def __init__(self):
-        self.github_token = os.getenv("GITHUB_TOKEN")
-        self.repo_url = os.getenv("REPOSITORY")
         self._validate_env_vars()
 
+        self.repo_url = os.getenv("REPOSITORY")
         self.git = Github(auth=Auth.Token(os.getenv("GITHUB_TOKEN")))
         self._repo = None
 
-    def _validate_env_vars(self):
+    @staticmethod
+    def _validate_env_vars():
         """Ensure all required environment variables are set."""
-        if not self.github_token:
+        if not os.getenv("GITHUB_TOKEN"):
             raise ValueError("GITHUB_TOKEN is not set.")
-        if not self.repo_url or "github.com" not in self.repo_url:
-            raise ValueError("REPO_URL is not set to a valid GitHub repository URL.")
+        if not os.getenv("REPOSITORY"):
+            raise ValueError("REPOSITORY is not set to a valid GitHub repository URL.")
 
     def get_repo(self):
         if self._repo is not None:
             return self._repo
-        if not self.repo_url or "github.com" not in self.repo_url:
-            raise RuntimeError("repo_url is not set to a valid GitHub repository URL.")
         owner, repo_name = self._parse_repo_url()
         full_name = f"{owner}/{repo_name}"
         try:
